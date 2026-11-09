@@ -57,6 +57,16 @@
                 Each direction is checked separately at 80% utilisation or above.</td>
               </tr>
               <tr>
+                <td><a href="#GLOBAL_LABEL_RADIUS"><code>SET label_radius 4</code></a></td>
+                <td>Round the corners of node labels, bandwidth labels and the classic legend.
+                0 (the default) keeps square boxes. Place this setting in the global section.</td>
+              </tr>
+              <tr>
+                <td><a href="#GLOBAL_LABEL_SHADOW"><code>SET label_shadow 1</code></a><br><code>SET label_shadow 0</code></td>
+                <td>Draw a soft shadow under filled node and bandwidth labels (1), or none (0, the
+                default). Place this setting in the global section.</td>
+              </tr>
+              <tr>
                 <td><a href="#NODE_EDITOR_LABEL_POSITION"><code>LABELOFFSET S60</code><br><code>SET editor_label_position S60</code></a></td>
                 <td>The editor's bottom label preset. Use matching N60, C or S60 values for its
                 top, middle or bottom presets. Raw LABELOFFSET remains available.</td>
@@ -2469,6 +2479,41 @@ LINK DEFAULT
           <dl class="small">
             <dt>2.0</dt><dd>Added optional high-load pulsing to the integrated viewer.</dd>
           </dl>
+        </div>
+      </div>
+      <div class="referenceentry">
+        <h3 id="GLOBAL_LABEL_RADIUS">SET label_radius</h3>
+        <div class="definition">SET label_radius <em class="meta">pixels</em></div>
+        <div class="description">
+          <p>Rounds the corners of node label boxes, link bandwidth label boxes and the
+          <code>classic</code> legend box. Values from 0 to 12 are used; larger values are reduced to
+          12. Curved edges are antialiased. This is a map-global SET hint: put it before the first
+          NODE or LINK.</p>
+          <p><strong>Default:</strong> <code>0</code>, square boxes exactly as in earlier versions.
+          New blank maps created by the editor use <code>4</code>.</p>
+          <p>Any non-zero radius, or <a href="#GLOBAL_LABEL_SHADOW">SET label_shadow 1</a>, also
+          widens node label padding so text clears the corners. A node selected in the editor keeps
+          its square highlight.</p>
+        </div>
+        <div class="examples">
+          <h4>Examples</h4>
+          <pre><code>SET label_radius 4
+SET label_shadow 1</code></pre>
+        </div>
+      </div>
+      <div class="referenceentry">
+        <h3 id="GLOBAL_LABEL_SHADOW">SET label_shadow</h3>
+        <div class="definition">SET label_shadow <em class="meta">0|1</em></div>
+        <div class="description">
+          <p>Draws a soft shadow below node and bandwidth labels that have a background colour.
+          Labels with <code>LABELBGCOLOR none</code> or <code>BWBOXCOLOR none</code> cast no shadow.
+          This is a map-global SET hint: put it before the first NODE or LINK.</p>
+          <p><strong>Default:</strong> <code>0</code> (no shadow). New blank maps created by the
+          editor use <code>1</code>.</p>
+        </div>
+        <div class="examples">
+          <h4>Examples</h4>
+          <pre><code>SET label_shadow 1</code></pre>
         </div>
       </div>
       <div class="referenceentry">

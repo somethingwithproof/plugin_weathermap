@@ -290,7 +290,8 @@ class WeatherMapNode extends WeatherMapItem {
 		$icon_w    = 0;
 		$icon_h    = 0;
 
-		$col = new Colour(-1, -1, -1);
+		$col      = new Colour(-1, -1, -1);
+		$boxStyle = wm_label_box_style($map);
 
 		// print $col->as_string();
 
@@ -346,6 +347,9 @@ class WeatherMapNode extends WeatherMapItem {
 		if ($this->label != '') {
 			$padding   = 4.0;
 			$padfactor = 1.0;
+			// Rounded label boxes need extra room so the corners clear the text.
+			$padx      = wm_label_box_is_styled($boxStyle) ? 14.0 : $padding;
+			$pady      = wm_label_box_is_styled($boxStyle) ? 8.0 : $padding;
 			$txt_x     = 0;
 			$txt_y     = 0;
 
@@ -372,8 +376,8 @@ class WeatherMapNode extends WeatherMapItem {
 			}
 
 			if ($this->labelangle == 90 || $this->labelangle == 270) {
-				$boxwidth  = ($strheight * $padfactor) + $padding;
-				$boxheight = ($strwidth * $padfactor) + $padding;
+				$boxwidth  = ($strheight * $padfactor) + $pady;
+				$boxheight = ($strwidth * $padfactor) + $padx;
 
 				wm_debug('Node->pre_render: ' . $this->name . " Label Metrics are: $strwidth x $strheight -> $boxwidth x $boxheight");
 
@@ -395,8 +399,8 @@ class WeatherMapNode extends WeatherMapItem {
 			}
 
 			if ($this->labelangle == 0 || $this->labelangle == 180) {
-				$boxwidth  = ($strwidth * $padfactor) + $padding;
-				$boxheight = ($strheight * $padfactor) + $padding;
+				$boxwidth  = ($strwidth * $padfactor) + $padx;
+				$boxheight = ($strheight * $padfactor) + $pady;
 
 				wm_debug('Node->pre_render: ' . $this->name . " Label Metrics are: $strwidth x $strheight -> $boxwidth x $boxheight");
 
@@ -702,6 +706,14 @@ class WeatherMapNode extends WeatherMapItem {
 		$bbox_y1 = min($label_y1, $icon_y1);
 		$bbox_y2 = max($label_y2, $icon_y2) + 1;
 
+		if ($boxStyle['shadow'] && $this->label != '') {
+			// Leave room for the shadow; centre_x/centre_y below keep the node in place.
+			$bbox_x1 -= WM_LABEL_SHADOW_MARGIN;
+			$bbox_y1 -= WM_LABEL_SHADOW_MARGIN;
+			$bbox_x2 += WM_LABEL_SHADOW_MARGIN;
+			$bbox_y2 += WM_LABEL_SHADOW_MARGIN;
+		}
+
 		// create TWO imagemap entries - one for the label and one for the icon
 		// (so we can have close-spaced icons better)
 		$temp_width  = intval(round($bbox_x2 - $bbox_x1));
@@ -756,20 +768,25 @@ class WeatherMapNode extends WeatherMapItem {
 			$label_x2 = (int) ceil($label_x2);
 			$label_y2 = (int) ceil($label_y2);
 
-			// if there's an icon, then you can choose to have no background
-			if (!$col->is_none()) {
-				imagefilledrectangle($node_im, $label_x1, $label_y1, $label_x2, $label_y2, $col->gdallocate($node_im));
-			}
+			$olcol = new Colour($this->labeloutlinecolour);
 
-			if ($this->selected) {
-				imagerectangle($node_im, $label_x1, $label_y1, $label_x2, $label_y2, $map->selected);
-
-				// would be nice if it was thicker, too...
-				wimagerectangle($node_im, $label_x1 + 1, $label_y1 + 1, $label_x2 - 1, $label_y2 - 1, $map->selected);
+			if (!$this->selected && wm_label_box_is_styled($boxStyle) && ($col->is_real() || $col->is_none())) {
+				wm_draw_label_box($node_im, $label_x1, $label_y1, $label_x2, $label_y2, $boxStyle,
+					$col->is_real() ? [$col->r, $col->g, $col->b] : null,
+					$olcol->is_real() ? [$olcol->r, $olcol->g, $olcol->b] : null
+				);
 			} else {
-				$olcol = new Colour($this->labeloutlinecolour);
+				// if there's an icon, then you can choose to have no background
+				if (!$col->is_none()) {
+					imagefilledrectangle($node_im, $label_x1, $label_y1, $label_x2, $label_y2, $col->gdallocate($node_im));
+				}
 
-				if ($olcol->is_real()) {
+				if ($this->selected) {
+					imagerectangle($node_im, $label_x1, $label_y1, $label_x2, $label_y2, $map->selected);
+
+					// would be nice if it was thicker, too...
+					wimagerectangle($node_im, $label_x1 + 1, $label_y1 + 1, $label_x2 - 1, $label_y2 - 1, $map->selected);
+				} elseif ($olcol->is_real()) {
 					imagerectangle($node_im, $label_x1, $label_y1, $label_x2, $label_y2, $olcol->gdallocate($node_im));
 				}
 			}

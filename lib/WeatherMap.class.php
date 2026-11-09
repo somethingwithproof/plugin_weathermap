@@ -44,6 +44,7 @@ require_once('HTML_ImageMap.class.php');
 
 require_once('WeatherMap.functions.php');
 require_once('geometry.php');
+require_once('WeatherMap.labelbox.php');
 require_once('WeatherMapNode.class.php');
 require_once('WeatherMap.notes.php');
 require_once('WeatherMapLink.class.php');
@@ -1502,16 +1503,26 @@ class WeatherMap extends WeatherMapBase {
 		rotateAboutPoint($ppoints, $x, $y, $rangle);
 		rotateAboutPoint($apoints, $x, $y, $rangle);
 
-		if ($bgcolour != [-1, -1, -1]) {
-			$bgcol = myimagecolorallocate($image, $bgcolour[0], $bgcolour[1], $bgcolour[2]);
-			// imagefilledrectangle($image, $x1, $y1, $x2, $y2, $bgcol);
-			wimagefilledpolygon($image, $ppoints, 4, $bgcol);
-		}
+		$boxStyle = wm_label_box_style($this);
 
-		if ($outlinecolour != [-1, -1, -1]) {
-			$outlinecol = myimagecolorallocate($image, $outlinecolour[0], $outlinecolour[1], $outlinecolour[2]);
-			// imagerectangle($image, $x1, $y1, $x2, $y2, $outlinecol);
-			wimagepolygon($image, $ppoints, 4, $outlinecol);
+		if (wm_label_box_is_styled($boxStyle)) {
+			wm_draw_label_box($image, $x1, $y1, $x2, $y2, $boxStyle,
+				$bgcolour      != [-1, -1, -1] ? $bgcolour : null,
+				$outlinecolour != [-1, -1, -1] ? $outlinecolour : null,
+				$rangle, $x, $y
+			);
+		} else {
+			if ($bgcolour != [-1, -1, -1]) {
+				$bgcol = myimagecolorallocate($image, $bgcolour[0], $bgcolour[1], $bgcolour[2]);
+				// imagefilledrectangle($image, $x1, $y1, $x2, $y2, $bgcol);
+				wimagefilledpolygon($image, $ppoints, 4, $bgcol);
+			}
+
+			if ($outlinecolour != [-1, -1, -1]) {
+				$outlinecol = myimagecolorallocate($image, $outlinecolour[0], $outlinecolour[1], $outlinecolour[2]);
+				// imagerectangle($image, $x1, $y1, $x2, $y2, $outlinecol);
+				wimagepolygon($image, $ppoints, 4, $outlinecol);
+			}
 		}
 
 		$textcol = myimagecolorallocate($image, $textcolour[0], $textcolour[1], $textcolour[2]);
@@ -2087,13 +2098,25 @@ class WeatherMap extends WeatherMapBase {
 
 			$this->AllocateScaleColours($scale_im,$scale_ref);
 
-			if (!is_none($this->colours['DEFAULT']['KEYBG'])) {
+			$boxStyle = wm_label_box_style($this);
+			// The legend sits flush with its own canvas edge, so it takes the corner radius but not the shadow.
+			$boxStyle['shadow'] = false;
+
+			if (wm_label_box_is_styled($boxStyle)) {
+				$keyColour = function ($name) {
+					$colour = $this->colours['DEFAULT'][$name];
+
+					return is_none($colour) ? null : [$colour['red1'], $colour['green1'], $colour['blue1']];
+				};
+
+				wm_draw_label_box($scale_im, 0, 0, $boxwidth, $boxheight, $boxStyle, $keyColour('KEYBG'), $keyColour('KEYOUTLINE'));
+			} elseif (!is_none($this->colours['DEFAULT']['KEYBG'])) {
 				wimagefilledrectangle($scale_im, 0, 0, $boxwidth, $boxheight,
 					$this->colours['DEFAULT']['KEYBG'][$scale_ref]
 				);
 			}
 
-			if (!is_none($this->colours['DEFAULT']['KEYOUTLINE'])) {
+			if (!wm_label_box_is_styled($boxStyle) && !is_none($this->colours['DEFAULT']['KEYOUTLINE'])) {
 				wimagerectangle($scale_im, 0, 0, $boxwidth, $boxheight,
 					$this->colours['DEFAULT']['KEYOUTLINE'][$scale_ref]
 				);
