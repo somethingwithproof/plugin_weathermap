@@ -61,9 +61,29 @@ try {
 	wm_engine_assert($saved->width == 1400 && $saved->height == 750,'canvas');
 	wm_engine_assert($saved->htmlstyle === 'overlib','dynamic');
 	wm_engine_assert($saved->links['DEFAULT']->arrowstyle === 'compact','arrows');
-	wm_engine_assert($saved->links['DEFAULT']->commentfontcolour == [0, 0, 255],'blue');
+	wm_engine_assert($saved->links['DEFAULT']->commentfontcolour == [71, 85, 105],'comment colour');
 	$font = $saved->fonts[$saved->links['DEFAULT']->commentfont];
 	wm_engine_assert($font->size == 9 && is_readable($font->file),'font');
+	wm_engine_assert($saved->get_hint('label_radius') === '4' && $saved->get_hint('label_shadow') === '1' && $saved->get_hint('antialias') === '1','label style hints');
+	wm_engine_assert($saved->links['DEFAULT']->width == 6 && $saved->links['DEFAULT']->outlinecolour == [71, 85, 105],'link style');
+	wm_engine_assert($saved->nodes['DEFAULT']->labeloutlinecolour == [203, 213, 225] && $saved->nodes['DEFAULT']->labelfontcolour == [30, 41, 59],'node label colours');
+	wm_engine_assert(basename($saved->fonts[$saved->nodes['DEFAULT']->labelfont]->file) === 'VeraBd.ttf' && $saved->fonts[$saved->titlefont]->size == 13,'heading fonts');
+	$bg = $saved->colours['DEFAULT']['BG'];
+	wm_engine_assert(array_map('intval', [$bg['red1'], $bg['green1'], $bg['blue1']]) === [248, 250, 252],'background');
+	$bands = [];
+	foreach ($saved->colours['DEFAULT'] as $band) {
+		if (empty($band['special'])) {
+			$bands[] = array_map('intval', [$band['bottom'], $band['top'], $band['red1'], $band['green1'], $band['blue1']]);
+		}
+	}
+	sort($bands);
+	$expected = WM_PRESET_SCALE;
+	sort($expected);
+	// The saved SCALE lines must replace, not be merged with, the engine's built-in rainbow.
+	wm_engine_assert($bands === $expected,'preset scale');
+	$saved->rrdtool = PHP_BINARY;
+	$saved->DrawMap($directory . '/new.png');
+	wm_engine_assert(is_file($directory . '/new.png'),'render');
 	$source = file_get_contents($plugin . '/weathermap-cacti-plugin-mgmt.php');
 	$start  = strpos($source,'function newMap(');
 	eval(str_replace('__DIR__',var_export($plugin,true),substr($source,$start)));

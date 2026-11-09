@@ -2467,6 +2467,8 @@ function wmColourRefreshMap() {
 // Presets affect only DEFAULT; other named scales remain available in Advanced.
 var wmTrafficPresets = {
     classic: [[0, 0, '#c0c0c0'], [0, 1, '#ffffff'], [1, 10, '#8c00ff'], [10, 25, '#2020ff'], [25, 40, '#00c0ff'], [40, 55, '#00f000'], [55, 70, '#f0f000'], [70, 85, '#ffc000'], [85, 100, '#ff0000']],
+    // Matches WM_PRESET_SCALE, the scale new maps start with.
+    calm: [[0, 0, '#cbd5e1'], [0, 1, '#e2e8f0'], [1, 10, '#5eead4'], [10, 25, '#2dd4bf'], [25, 40, '#84cc16'], [40, 55, '#facc15'], [55, 70, '#fb923c'], [70, 85, '#ef4444'], [85, 100, '#be123c']],
     signals: [[0, 0, '#c0c0c0'], [0, 50, '#008000'], [50, 75, '#d18b00'], [75, 90, '#e65c00'], [90, 100, '#cc0000']],
     ocean: [[0, 0, '#c0c0c0'], [0, 20, '#b3e5fc'], [20, 40, '#4fc3f7'], [40, 60, '#0288d1'], [60, 80, '#01579b'], [80, 100, '#002b55']],
     heat: [[0, 0, '#c0c0c0'], [0, 25, '#6a1b9a'], [25, 50, '#ab47bc'], [50, 75, '#ef6c00'], [75, 90, '#e53935'], [90, 100, '#9b0000']],

@@ -1755,6 +1755,10 @@ msgid "Sunrise Amber"
 msgstr ""
 
 #: weathermap-cacti-plugin-editor.php
+msgid "Teal to Red"
+msgstr ""
+
+#: weathermap-cacti-plugin-editor.php
 msgid "Colours show how much of a link's bandwidth is being used. For example, 75% means three quarters of its capacity."
 msgstr ""
 
