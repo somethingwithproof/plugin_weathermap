@@ -24,6 +24,7 @@ IMPORTANT NOTE: This version only works on CACTI 1.x++!
 * dev: Pin the CI database image and shared test dependencies, disable persisted checkout credentials, and limit workflow permissions and runtime
 * feature: Add `SET label_radius` and `SET label_shadow` for rounded, antialiased and shadowed node, bandwidth and legend label boxes; both are off unless a map sets them
 * feature: Start new blank maps with TrueType labels, a teal-to-red traffic scale (also offered as the Teal to Red colour preset), thinner antialiased links, softer label colours and rounded, shadowed labels; existing maps keep their appearance
+* feature: Give the map image a subtle rounded frame, restyle management warnings for light and dark themes, and remove unused viewer styles
 
 --- 2.0.1 ---
 
