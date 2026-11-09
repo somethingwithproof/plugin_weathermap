@@ -37,11 +37,11 @@ const WM_LABEL_SHADOW_MARGIN = 4;
  * @return array{radius: int, shadow: bool}
  */
 function wm_label_box_style($map) {
-	$radius = $map->get_hint('label_radius', '0');
+	$radius = trim((string) $map->get_hint('label_radius', '0'));
 
 	return [
 		'radius' => is_numeric($radius) ? max(0, min(12, (int) $radius)) : 0,
-		'shadow' => (string) $map->get_hint('label_shadow', '0') === '1'
+		'shadow' => trim((string) $map->get_hint('label_shadow', '0')) === '1'
 	];
 }
 

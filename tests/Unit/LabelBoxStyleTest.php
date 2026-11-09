@@ -117,6 +117,10 @@ CONF;
 		$item->add_hint('label_radius', 'round');
 		$item->add_hint('label_shadow', 'yes');
 		self::assertSame(['radius' => 0, 'shadow' => false], wm_label_box_style($item));
+		// Values read from a config line can keep trailing whitespace.
+		$item->add_hint('label_radius', '5 ');
+		$item->add_hint('label_shadow', '1 ');
+		self::assertSame(['radius' => 5, 'shadow' => true], wm_label_box_style($item));
 		$item->add_hint('label_radius', '-3');
 		self::assertSame(0, wm_label_box_style($item)['radius']);
 	}
@@ -158,8 +162,9 @@ CONF;
 		// The padded node image must still be placed so the box lands on its bounding box.
 		self::assertSame([200, 0, 0], $this->rgb($image, $x2 - 4, ($y1 + $y2) / 2 + 3));
 
-		// A label without a background casts no shadow; its outline is still drawn.
+		// A label without a background casts no shadow, so its image is not widened for one.
 		[$dx1, $dy1, $dx2, $dy2] = $map->nodes['d']->boundingboxes[0];
+		self::assertSame((int) round($dx2 - $dx1) + 1, imagesx($map->nodes['d']->image));
 		self::assertSame([255, 255, 255], $this->rgb($image, ($dx1 + $dx2) / 2, $dy2 + 3));
 		[$red, $green, $blue] = $this->rgb($image, ($dx1 + $dx2) / 2, $dy1);
 		self::assertGreaterThan(150, $blue);

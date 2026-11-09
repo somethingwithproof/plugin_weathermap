@@ -706,7 +706,7 @@ class WeatherMapNode extends WeatherMapItem {
 		$bbox_y1 = min($label_y1, $icon_y1);
 		$bbox_y2 = max($label_y2, $icon_y2) + 1;
 
-		if ($boxStyle['shadow'] && $this->label != '') {
+		if ($boxStyle['shadow'] && $this->label != '' && $col->is_real()) {
 			// Leave room for the shadow; centre_x/centre_y below keep the node in place.
 			$bbox_x1 -= WM_LABEL_SHADOW_MARGIN;
 			$bbox_y1 -= WM_LABEL_SHADOW_MARGIN;
